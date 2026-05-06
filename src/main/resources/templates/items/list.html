@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Items</title>
+</head>
+<body>
+<main>
+    <h1>Items</h1>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+    </nav>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Room</th>
+            <th>Serial number</th>
+            <th>Estimated value</th>
+            <th>Purchased on</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.name}">Coffee maker</td>
+            <td th:text="${item.room.name}">Kitchen</td>
+            <td th:text="${item.serialNumber}">ABC123</td>
+            <td th:text="${item.estimatedValue}">99.00</td>
+            <td th:text="${item.purchasedOn}">2026-01-01</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

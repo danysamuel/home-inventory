@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rooms</title>
+</head>
+<body>
+<main>
+    <h1>Rooms</h1>
+    <nav>
+        <a th:href="@{/items}">Items</a>
+    </nav>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Items</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="room : ${rooms}">
+            <td th:text="${room.name}">Kitchen</td>
+            <td th:text="${room.description}">Cooking and pantry storage</td>
+            <td th:text="${#lists.size(room.items)}">0</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

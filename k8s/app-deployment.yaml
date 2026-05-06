@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-inventory
+  namespace: home-inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: home-inventory
+  template:
+    metadata:
+      labels:
+        app: home-inventory
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:17-alpine
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          command:
+            - sh
+            - -c
+            - >
+              until pg_isready -h postgres -p 5432 -U "$POSTGRES_USER" -d "$POSTGRES_DB";
+              do echo "waiting for postgres"; sleep 2; done
+      containers:
+        - name: home-inventory
+          image: ghcr.io/danysamuel/home-inventory:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres.home-inventory.svc.cluster.local:5432/home_inventory
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /rooms
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /rooms
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6

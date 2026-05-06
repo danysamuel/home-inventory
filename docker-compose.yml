@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: home-inventory-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: home_inventory
+      POSTGRES_USER: home_inventory
+      POSTGRES_PASSWORD: home_inventory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U home_inventory -d home_inventory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
